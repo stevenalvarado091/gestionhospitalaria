@@ -17,6 +17,12 @@ public class Documento extends BaseEntity {
     @Column(nullable = false, length = 500)
     private String rutaArchivo; // o URL si luego usas cloud
 
+    @Column(nullable = false)
+    private Long tamanoArchivo;
+
+    @Column(nullable = false, length = 20)
+    private String extension;
+
     @Column(nullable = false, length = 150)
     private String usuario;
 
@@ -76,6 +82,22 @@ public class Documento extends BaseEntity {
 
     public void setIngreso(Ingreso ingreso) {
         this.ingreso = ingreso;
+    }
+
+    public Long getTamanoArchivo() {
+        return tamanoArchivo;
+    }
+
+    public void setTamanoArchivo(Long tamanoArchivo) {
+        this.tamanoArchivo = tamanoArchivo;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
     }
 }
 

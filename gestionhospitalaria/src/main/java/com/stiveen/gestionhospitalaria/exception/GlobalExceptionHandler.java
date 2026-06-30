@@ -63,5 +63,17 @@ public class GlobalExceptionHandler {
                 .body(Map.of("mensaje", ex.getMessage()));
     }
 
+    @ExceptionHandler(IngresoNoEncontradoException.class)
+    public ResponseEntity<Map<String,String>> manejarIngresoNoEncontrado(
+            IngresoNoEncontradoException ex){
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of(
+                        "mensaje",
+                        ex.getMessage()
+                ));
+    }
+
 }
 

@@ -5,8 +5,10 @@ import com.stiveen.gestionhospitalaria.dto.response.IngresoDetalleResponse;
 import com.stiveen.gestionhospitalaria.dto.response.IngresoListadoResponse;
 import com.stiveen.gestionhospitalaria.dto.response.TimelineResponse;
 import com.stiveen.gestionhospitalaria.entity.Ingreso;
+import com.stiveen.gestionhospitalaria.enums.TipoDocumento;
 import com.stiveen.gestionhospitalaria.service.IngresoService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,11 +47,45 @@ public class IngresoController {
         return ingresoService.getDetalleIngresoPorNumeroIngreso(numeroIngreso);
     }
 
+    @GetMapping("/buscar-documento")
+    public List<IngresoListadoResponse> buscarPorDocumento(
+
+            @RequestParam TipoDocumento tipoDocumento,
+
+            @RequestParam String numeroDocumento) {
+
+        return ingresoService.buscarPorDocumento(
+                tipoDocumento,
+                numeroDocumento);
+    }
+
     @GetMapping("/{id}/timeline")
     public List<TimelineResponse> obtenerTimeline(
             @PathVariable Long id) {
 
         return ingresoService.obtenerTimeline(id);
+    }
+
+    @GetMapping("/pagina")
+    public Page<IngresoListadoResponse> listarPaginado(
+
+            @RequestParam(defaultValue = "0")
+            int pagina,
+
+            @RequestParam(defaultValue = "10")
+            int tamanio) {
+
+        return ingresoService.listarPaginado(
+                pagina,
+                tamanio);
+    }
+
+    @GetMapping("/buscar-nombre")
+    public List<IngresoListadoResponse> buscarPorNombre(
+            @RequestParam String nombre){
+
+        return ingresoService.buscarPorNombre(nombre);
+
     }
 
 }

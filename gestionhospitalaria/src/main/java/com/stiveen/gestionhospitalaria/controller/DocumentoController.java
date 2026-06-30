@@ -6,6 +6,10 @@ import com.stiveen.gestionhospitalaria.service.DocumentoService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 
 @RestController
@@ -38,5 +42,20 @@ public class DocumentoController {
     @GetMapping("/ingreso/{ingresoId}")
     public List<DocumentoResponse> listar(@PathVariable Long ingresoId) {
         return documentoService.listarPorIngreso(ingresoId);
+    }
+
+    @GetMapping("/{id}/descargar")
+    public ResponseEntity<Resource> descargar(
+            @PathVariable Long id
+    ) {
+
+        Resource archivo = documentoService.descargar(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" +
+                                archivo.getFilename() +
+                                "\"").body(archivo);
+
     }
 }

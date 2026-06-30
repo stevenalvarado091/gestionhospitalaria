@@ -7,6 +7,7 @@ import com.stiveen.gestionhospitalaria.dto.response.EnvioResponse;
 import com.stiveen.gestionhospitalaria.entity.*;
 import com.stiveen.gestionhospitalaria.enums.TipoCorreo;
 import com.stiveen.gestionhospitalaria.enums.TipoEnvioCorreo;
+import com.stiveen.gestionhospitalaria.exception.IngresoNoEncontradoException;
 import com.stiveen.gestionhospitalaria.repository.*;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.core.io.ByteArrayResource;
@@ -70,7 +71,8 @@ public class CorreoService {
             MultipartFile[] archivos){
 
         Ingreso ingreso = ingresoRepository.findById(ingresoId)
-                .orElseThrow(() -> new RuntimeException("Ingreso no encontrado"));
+                .orElseThrow(() -> new IngresoNoEncontradoException(
+                                "No existe un ingreso con ese número."));
 
         Eps epsDestino = epsRepository.findById(epsDestinoId)
                 .orElseThrow(() ->
@@ -296,6 +298,11 @@ public class CorreoService {
         dto.setAsunto(correo.getAsunto());
         dto.setMensaje(correo.getMensaje());
         dto.setIngresoId(correo.getIngreso().getId());
+
+        dto.setUsuario(correo.getUsuario());
+        dto.setRolUsuario(correo.getRolUsuario());
+        dto.setFechaCreacion(correo.getFechaCreacion());
+
 
         // =========================
         // DESTINATARIOS

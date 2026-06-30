@@ -1,14 +1,19 @@
 package com.stiveen.gestionhospitalaria.dto.response;
 
+import java.time.LocalDateTime;
+
 public class DocumentoResponse {
 
     private Long id;
     private String nombre;
     private String tipoDocumento;
-    private String rutaArchivo;
     private Long ingresoId;
     private String usuario;
     private String rolUsuario;
+    private Long tamanoArchivo;
+    private String tamano;
+    private String extension;
+    private LocalDateTime fechaCreacion;
 
     // GETTERS Y SETTERS
 
@@ -36,14 +41,6 @@ public class DocumentoResponse {
         this.tipoDocumento = tipoDocumento;
     }
 
-    public String getRutaArchivo() {
-        return rutaArchivo;
-    }
-
-    public void setRutaArchivo(String rutaArchivo) {
-        this.rutaArchivo = rutaArchivo;
-    }
-
     public Long getIngresoId() {
         return ingresoId;
     }
@@ -66,5 +63,37 @@ public class DocumentoResponse {
 
     public void setRolUsuario(String rolUsuario) {
         this.rolUsuario = rolUsuario;
+    }
+
+    public Long getTamanoArchivo() {
+        return tamanoArchivo;
+    }
+
+    public void setTamanoArchivo(Long tamanoArchivo) {
+        this.tamanoArchivo = tamanoArchivo;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public String getTamano() {
+        return tamano;
+    }
+
+    public void setTamano(String tamano) {
+        this.tamano = tamano;
     }
 }

@@ -1,14 +1,21 @@
 package com.stiveen.gestionhospitalaria.service;
 import com.stiveen.gestionhospitalaria.dto.response.*;
 import com.stiveen.gestionhospitalaria.entity.*;
+import com.stiveen.gestionhospitalaria.enums.TipoDocumento;
 import com.stiveen.gestionhospitalaria.exception.EpsNoEncontradaException;
 import com.stiveen.gestionhospitalaria.exception.IngresoDuplicadoException;
+import com.stiveen.gestionhospitalaria.exception.IngresoNoEncontradoException;
 import com.stiveen.gestionhospitalaria.repository.*;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.stiveen.gestionhospitalaria.dto.request.IngresoRequest;
 import com.stiveen.gestionhospitalaria.repository.EpsRepository;
 import com.stiveen.gestionhospitalaria.repository.PacienteRepository;
 import com.stiveen.gestionhospitalaria.dto.response.IngresoListadoResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 
 import java.util.ArrayList;
@@ -136,7 +143,6 @@ public class IngresoService {
                             doc.setId(d.getId());
                             doc.setNombre(d.getNombre());
                             doc.setTipoDocumento(d.getTipoDocumento().name());
-                            doc.setRutaArchivo(d.getRutaArchivo());
                             doc.setIngresoId(d.getIngreso().getId());
                             return doc;
                         })
@@ -256,10 +262,25 @@ public class IngresoService {
 
     public List<IngresoListadoResponse> listarTodos() {
 
-        return ingresoRepository.findAll()
+        return ingresoRepository
+                .findAll(
+                        Sort.by(
+                                Sort.Direction.DESC,
+                                "fechaActualizacion"
+                        )
+                )
                 .stream()
                 .map(this::mapListado)
                 .toList();
+    }
+
+    public IngresoListadoResponse buscarPorNumeroIngreso(String numeroIngreso) {
+
+        Ingreso ingreso = ingresoRepository.findByNumeroIngreso(numeroIngreso)
+                .orElseThrow(() ->
+                        new IngresoNoEncontradoException("Ingreso no encontrado"));
+
+        return mapListado(ingreso);
     }
 
     private IngresoListadoResponse mapListado(
@@ -302,16 +323,28 @@ public class IngresoService {
         Ingreso ingreso = ingresoRepository
                 .findByNumeroIngreso(numeroIngreso)
                 .orElseThrow(() ->
-                        new RuntimeException("Ingreso no encontrado"));
+                        new IngresoNoEncontradoException("Ingreso no encontrado"));
 
         return getDetalleIngreso(ingreso.getId());
+    }
+
+    public List<IngresoListadoResponse> buscarPorDocumento(
+            TipoDocumento tipoDocumento,
+            String numeroDocumento) {
+
+        return ingresoRepository
+                .buscarPorDocumento(tipoDocumento, numeroDocumento)
+                .stream()
+                .map(this::mapListado)
+                .toList();
     }
 
 
     public List<TimelineResponse> obtenerTimeline(Long ingresoId) {
 
         Ingreso ingreso = ingresoRepository.findById(ingresoId)
-                .orElseThrow(() -> new RuntimeException("Ingreso no encontrado"));
+                .orElseThrow(() ->
+                        new IngresoNoEncontradoException("Ingreso no encontrado"));
 
         List<TimelineResponse> timeline = new ArrayList<>();
 
@@ -395,6 +428,25 @@ public class IngresoService {
         );
 
         return timeline;
+    }
+
+
+    public Page<IngresoListadoResponse> listarPaginado(int pagina, int tamanio) {
+
+        Pageable pageable = PageRequest.of(pagina, tamanio,
+                Sort.by(Sort.Direction.DESC, "fechaActualizacion"));
+
+        return ingresoRepository.findAll(pageable).map(this::mapListado);
+    }
+
+    public List<IngresoListadoResponse> buscarPorNombre(String nombre){
+
+        return ingresoRepository
+                .buscarPorNombre(nombre)
+                .stream()
+                .map(this::mapListado)
+                .toList();
+
     }
 
 }
