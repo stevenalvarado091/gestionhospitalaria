@@ -78,6 +78,7 @@ public class DocumentoService {
 
             Documento documento = new Documento();
 
+            documento.setIngreso(ingreso);
             documento.setNombre(nombreOriginal);
             documento.setTipoDocumento(tipoDocumento);
             documento.setRutaArchivo(rutaArchivo);
@@ -156,14 +157,24 @@ public class DocumentoService {
 
         DocumentoResponse dto = new DocumentoResponse();
 
+        dto.setId(documento.getId());
+
         dto.setNombre(documento.getNombre());
+
         dto.setTipoDocumento(documento.getTipoDocumento().name());
+
         dto.setIngresoId(documento.getIngreso().getId());
+
         dto.setUsuario(documento.getUsuario());
+
         dto.setRolUsuario(documento.getRolUsuario());
+
         dto.setExtension(documento.getExtension());
+
         dto.setTamanoArchivo(documento.getTamanoArchivo());
+
         dto.setTamano(convertirTamano(documento.getTamanoArchivo()));
+
         dto.setFechaCreacion(documento.getFechaCreacion());
 
         return dto;

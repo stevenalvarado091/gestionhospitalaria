@@ -135,15 +135,25 @@ public class IngresoService {
         dto.setObservaciones(observaciones);
 
         // DOCUMENTOS
+        // DOCUMENTOS
         List<DocumentoResponse> documentos =
                 documentoRepository.findByIngresoId(ingreso.getId())
                         .stream()
                         .map(d -> {
+
                             DocumentoResponse doc = new DocumentoResponse();
+
                             doc.setId(d.getId());
                             doc.setNombre(d.getNombre());
                             doc.setTipoDocumento(d.getTipoDocumento().name());
                             doc.setIngresoId(d.getIngreso().getId());
+
+                            doc.setUsuario(d.getUsuario());
+                            doc.setRolUsuario(d.getRolUsuario());
+                            doc.setExtension(d.getExtension());
+                            doc.setTamanoArchivo(d.getTamanoArchivo());
+                            doc.setFechaCreacion(d.getFechaCreacion());
+
                             return doc;
                         })
                         .toList();
