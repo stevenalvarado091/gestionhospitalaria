@@ -24,9 +24,6 @@ public class CorreoDestinatario extends BaseEntity {
         this.correo = correo;
     }
 
-    public CorreoEnviado getCorreoEnviado() {
-        return correoEnviado;
-    }
 
     public void setCorreoEnviado(CorreoEnviado correoEnviado) {
         this.correoEnviado = correoEnviado;

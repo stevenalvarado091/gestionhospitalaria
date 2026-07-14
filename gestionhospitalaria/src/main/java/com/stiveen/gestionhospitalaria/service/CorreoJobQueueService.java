@@ -1,8 +1,7 @@
 package com.stiveen.gestionhospitalaria.service;
 
-import com.stiveen.gestionhospitalaria.entity.CorreoDestinatario;
-import com.stiveen.gestionhospitalaria.entity.CorreoEnviado;
-import com.stiveen.gestionhospitalaria.entity.CorreoJob;
+import com.stiveen.gestionhospitalaria.entity.*;
+import com.stiveen.gestionhospitalaria.repository.CorreoEnvioRepository;
 import com.stiveen.gestionhospitalaria.repository.CorreoJobRepository;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -10,7 +9,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.stiveen.gestionhospitalaria.entity.CorreoAdjunto;
 import org.springframework.core.io.FileSystemResource;
 
 import java.time.LocalDateTime;
@@ -20,12 +18,18 @@ import java.util.List;
 public class CorreoJobQueueService {
 
     private final CorreoJobRepository correoJobRepository;
+    private final CorreoEnvioRepository correoEnvioRepository;
     private final JavaMailSender mailSender;
+
 
     public CorreoJobQueueService(
             CorreoJobRepository correoJobRepository,
-            JavaMailSender mailSender) {
+            CorreoEnvioRepository correoEnvioRepository,
+            JavaMailSender mailSender
+
+    ) {
         this.correoJobRepository = correoJobRepository;
+        this.correoEnvioRepository = correoEnvioRepository;
         this.mailSender = mailSender;
     }
 
@@ -42,7 +46,6 @@ public class CorreoJobQueueService {
         List<CorreoJob> jobs = correoJobRepository.findPendientes(ahora, limiteBloqueo);
 
         for (CorreoJob job : jobs) {
-
             try {
 
                 bloquearJob(job, ahora);
@@ -71,58 +74,69 @@ public class CorreoJobQueueService {
     // =========================
     private void ejecutarJob(CorreoJob job) throws Exception {
 
-        CorreoEnviado correo = job.getCorreoEnvio().getCorreoEnviado();
+        CorreoEnvio envio = job.getCorreoEnvio();
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        helper.setSubject(correo.getAsunto());
-        helper.setText(correo.getMensaje(), false);
+        helper.setSubject(envio.getAsunto());
+        helper.setText(envio.getMensaje(), false);
+
+
+        String[] destinatarios = envio.getDestinatarios()
+                .split(";");
+
+        helper.setTo(destinatarios);
 
         // =========================
         // DESTINATARIOS (FIX REAL)
         // =========================
-        if (job.getNumeroEnvio() == 4) {
-
-            String correoEscalamiento =
-                    correo.getEpsDestino().getCorreoEscalamiento();
-
-            if (correoEscalamiento == null || correoEscalamiento.isBlank()) {
-                throw new IllegalStateException(
-                        "La EPS "
-                                + correo.getEpsDestino().getNombre()
-                                + " no tiene correo de escalamiento configurado");
-            }
-
-            helper.setTo(correoEscalamiento);
-
-        } else {
-
-            List<String> destinatarios = correo.getDestinatarios()
-                    .stream()
-                    .map(CorreoDestinatario::getCorreo)
-                    .filter(c -> c != null && !c.isBlank())
-                    .toList();
-
-            if (destinatarios.isEmpty()) {
-                throw new IllegalStateException(
-                        "No hay destinatarios configurados para el correo ID: "
-                                + correo.getId());
-            }
-
-            helper.setTo(destinatarios.toArray(new String[0]));
-        }
-        for (CorreoAdjunto adjunto : correo.getAdjuntos()) {
+//        if (job.getNumeroEnvio() == 4) {
+//
+//            String correoEscalamiento =
+//                    envio.getCorreoEnviado()
+//                            .getEpsDestino()
+//                            .getCorreoEscalamiento();
+//
+//            if (correoEscalamiento == null || correoEscalamiento.isBlank()) {
+//                throw new IllegalStateException(
+//                        "La EPS "
+//                                + envio.getCorreoEnviado()
+//                                .getEpsDestino()
+//                                .getNombre()
+//                                + " no tiene correo de escalamiento configurado");
+//            }
+//
+//            helper.setTo(correoEscalamiento);
+//
+//        } else {
+//
+//            List<String> destinatarios =
+//                    envio.getCorreoEnviado()
+//                            .getDestinatarios()
+//                            .stream()
+//                            .map(CorreoDestinatario::getCorreo)
+//                            .toList();
+//
+//            if (destinatarios.isEmpty()) {
+//                throw new IllegalStateException(
+//                        "No hay destinatarios configurados para el envío ID: "
+//                                + envio.getId());
+//            }
+//
+//            helper.setTo(destinatarios.toArray(new String[0]));
+//        }
+        for (CorreoEnvioAdjunto adjunto : envio.getAdjuntos()) {
 
             FileSystemResource archivo =
-                    new FileSystemResource(
-                            adjunto.getRutaArchivo());
+                    new FileSystemResource(adjunto.getRutaArchivo());
 
             if (archivo.exists()) {
 
                 helper.addAttachment(
                         adjunto.getNombreArchivo(),
-                        archivo);
+                        archivo
+                );
             }
         }
 
@@ -138,6 +152,8 @@ public class CorreoJobQueueService {
         job.setEnProceso(false);
         job.setBloqueadoEn(null);
         job.setSiguienteIntento(null);
+        job.getCorreoEnvio().setFechaEjecutada(LocalDateTime.now());
+        correoEnvioRepository.save(job.getCorreoEnvio());
 
         correoJobRepository.save(job);
     }

@@ -1,21 +1,31 @@
 package com.stiveen.gestionhospitalaria.entity;
 
-import com.stiveen.gestionhospitalaria.enums.TipoAutorizacion;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "autorizaciones")
 public class Autorizacion extends BaseEntity {
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
-    private TipoAutorizacion tipoAutorizacion;
+    @Column(length = 100)
+    private String numeroAutorizacion;
 
-    @Column(nullable = false, length = 300)
-    private String asunto;
+    @Column(length = 3000)
+    private String observacion;
 
-    @Column(nullable = false, length = 3000)
-    private String descripcion;
+    @Column(length = 255)
+    private String nombreArchivo;
+
+    @Column(length = 255)
+    private String nombreOriginalArchivo;
+
+    @Column(length = 20)
+    private String extension;
+
+    @Column
+    private Long tamanoArchivo;
+
+    @Column(length = 500)
+    private String rutaArchivo;
 
     @Column(nullable = false, length = 150)
     private String usuario;
@@ -23,41 +33,56 @@ public class Autorizacion extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String rolUsuario;
 
-    @Column(nullable = false)
-    private Integer cantidadAdjuntos = 0;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ingreso_id", nullable = false)
     private Ingreso ingreso;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "eps_destino_id", nullable = false)
-    private Eps epsDestino;
-
-    // getters y setters
-
-    public TipoAutorizacion getTipoAutorizacion() {
-        return tipoAutorizacion;
+    public String getNumeroAutorizacion() {
+        return numeroAutorizacion;
     }
 
-    public void setTipoAutorizacion(TipoAutorizacion tipoAutorizacion) {
-        this.tipoAutorizacion = tipoAutorizacion;
+    public void setNumeroAutorizacion(String numeroAutorizacion) {
+        this.numeroAutorizacion = numeroAutorizacion;
     }
 
-    public String getAsunto() {
-        return asunto;
+    public String getObservacion() {
+        return observacion;
     }
 
-    public void setAsunto(String asunto) {
-        this.asunto = asunto;
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getNombreArchivo() {
+        return nombreArchivo;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setNombreArchivo(String nombreArchivo) {
+        this.nombreArchivo = nombreArchivo;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
+    public Long getTamanoArchivo() {
+        return tamanoArchivo;
+    }
+
+    public void setTamanoArchivo(Long tamanoArchivo) {
+        this.tamanoArchivo = tamanoArchivo;
+    }
+
+    public String getRutaArchivo() {
+        return rutaArchivo;
+    }
+
+    public void setRutaArchivo(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
     }
 
     public String getUsuario() {
@@ -76,14 +101,6 @@ public class Autorizacion extends BaseEntity {
         this.rolUsuario = rolUsuario;
     }
 
-    public Integer getCantidadAdjuntos() {
-        return cantidadAdjuntos;
-    }
-
-    public void setCantidadAdjuntos(Integer cantidadAdjuntos) {
-        this.cantidadAdjuntos = cantidadAdjuntos;
-    }
-
     public Ingreso getIngreso() {
         return ingreso;
     }
@@ -92,13 +109,11 @@ public class Autorizacion extends BaseEntity {
         this.ingreso = ingreso;
     }
 
-    public Eps getEpsDestino() {
-        return epsDestino;
+    public String getNombreOriginalArchivo() {
+        return nombreOriginalArchivo;
     }
 
-    public void setEpsDestino(Eps epsDestino) {
-        this.epsDestino = epsDestino;
+    public void setNombreOriginalArchivo(String nombreOriginalArchivo) {
+        this.nombreOriginalArchivo = nombreOriginalArchivo;
     }
-
 }
-

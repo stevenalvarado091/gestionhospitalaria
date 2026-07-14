@@ -3,12 +3,12 @@ package com.stiveen.gestionhospitalaria.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "correo_adjunto")
-public class CorreoAdjunto extends BaseEntity {
+@Table(name = "correo_envio_adjunto")
+public class CorreoEnvioAdjunto extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "correo_id", nullable = false)
-    private CorreoEnviado correo;
+    @JoinColumn(name = "correo_envio_id", nullable = false)
+    private CorreoEnvio correoEnvio;
 
     @Column(nullable = false, length = 300)
     private String nombreArchivo;
@@ -24,12 +24,15 @@ public class CorreoAdjunto extends BaseEntity {
     @Column(length = 30)
     private String tamano;
 
-    public CorreoEnviado getCorreo() {
-        return correo;
+    // getters y setters
+
+
+    public CorreoEnvio getCorreoEnvio() {
+        return correoEnvio;
     }
 
-    public void setCorreo(CorreoEnviado correo) {
-        this.correo = correo;
+    public void setCorreoEnvio(CorreoEnvio correoEnvio) {
+        this.correoEnvio = correoEnvio;
     }
 
     public String getNombreArchivo() {
@@ -71,5 +74,4 @@ public class CorreoAdjunto extends BaseEntity {
     public void setTamano(String tamano) {
         this.tamano = tamano;
     }
-
 }

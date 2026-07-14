@@ -5,14 +5,27 @@ import java.time.LocalDateTime;
 public class AutorizacionResponse {
 
     private Long id;
-    private String tipoAutorizacion;
-    private String asunto;
-    private String descripcion;
-    private String usuario;
-    private String rolUsuario;
+
+    private String numeroAutorizacion;
+
+    private String observacion;
+
+    private String nombreArchivo;
+
+    private String extension;
+
+    private Long tamanoArchivo;
+
+    private String tamano;
+
+    private Long ingresoId;
+
     private String numeroIngreso;
-    private String epsDestino;
-    private Integer cantidadAdjuntos;
+
+    private String usuario;
+
+    private String rolUsuario;
+
     private LocalDateTime fechaCreacion;
 
     public Long getId() {
@@ -23,28 +36,68 @@ public class AutorizacionResponse {
         this.id = id;
     }
 
-    public String getTipoAutorizacion() {
-        return tipoAutorizacion;
+    public String getNumeroAutorizacion() {
+        return numeroAutorizacion;
     }
 
-    public void setTipoAutorizacion(String tipoAutorizacion) {
-        this.tipoAutorizacion = tipoAutorizacion;
+    public void setNumeroAutorizacion(String numeroAutorizacion) {
+        this.numeroAutorizacion = numeroAutorizacion;
     }
 
-    public String getAsunto() {
-        return asunto;
+    public String getObservacion() {
+        return observacion;
     }
 
-    public void setAsunto(String asunto) {
-        this.asunto = asunto;
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getNombreArchivo() {
+        return nombreArchivo;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setNombreArchivo(String nombreArchivo) {
+        this.nombreArchivo = nombreArchivo;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
+    public Long getTamanoArchivo() {
+        return tamanoArchivo;
+    }
+
+    public void setTamanoArchivo(Long tamanoArchivo) {
+        this.tamanoArchivo = tamanoArchivo;
+    }
+
+    public String getTamano() {
+        return tamano;
+    }
+
+    public void setTamano(String tamano) {
+        this.tamano = tamano;
+    }
+
+    public Long getIngresoId() {
+        return ingresoId;
+    }
+
+    public void setIngresoId(Long ingresoId) {
+        this.ingresoId = ingresoId;
+    }
+
+    public String getNumeroIngreso() {
+        return numeroIngreso;
+    }
+
+    public void setNumeroIngreso(String numeroIngreso) {
+        this.numeroIngreso = numeroIngreso;
     }
 
     public String getUsuario() {
@@ -61,30 +114,6 @@ public class AutorizacionResponse {
 
     public void setRolUsuario(String rolUsuario) {
         this.rolUsuario = rolUsuario;
-    }
-
-    public String getNumeroIngreso() {
-        return numeroIngreso;
-    }
-
-    public void setNumeroIngreso(String numeroIngreso) {
-        this.numeroIngreso = numeroIngreso;
-    }
-
-    public String getEpsDestino() {
-        return epsDestino;
-    }
-
-    public void setEpsDestino(String epsDestino) {
-        this.epsDestino = epsDestino;
-    }
-
-    public Integer getCantidadAdjuntos() {
-        return cantidadAdjuntos;
-    }
-
-    public void setCantidadAdjuntos(Integer cantidadAdjuntos) {
-        this.cantidadAdjuntos = cantidadAdjuntos;
     }
 
     public LocalDateTime getFechaCreacion() {

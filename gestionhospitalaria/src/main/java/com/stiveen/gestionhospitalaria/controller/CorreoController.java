@@ -63,4 +63,12 @@ public class CorreoController {
                 correoService.listarPorIngreso(ingresoId)
         );
     }
+
+    @GetMapping("/adjuntos/{id}/descargar")
+    public ResponseEntity<?> descargarAdjunto(
+            @PathVariable Long id) {
+
+        return correoService.descargarAdjunto(id);
+
+    }
 }

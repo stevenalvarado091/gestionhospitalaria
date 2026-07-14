@@ -4,13 +4,9 @@ public class CrearAutorizacionRequest {
 
     private Long ingresoId;
 
-    private Long epsDestinoId;
+    private String numeroAutorizacion;
 
-    private String tipoAutorizacion;
-
-    private String asunto;
-
-    private String descripcion;
+    private String observacion;
 
     private String usuario;
 
@@ -24,36 +20,20 @@ public class CrearAutorizacionRequest {
         this.ingresoId = ingresoId;
     }
 
-    public Long getEpsDestinoId() {
-        return epsDestinoId;
+    public String getNumeroAutorizacion() {
+        return numeroAutorizacion;
     }
 
-    public void setEpsDestinoId(Long epsDestinoId) {
-        this.epsDestinoId = epsDestinoId;
+    public void setNumeroAutorizacion(String numeroAutorizacion) {
+        this.numeroAutorizacion = numeroAutorizacion;
     }
 
-    public String getTipoAutorizacion() {
-        return tipoAutorizacion;
+    public String getObservacion() {
+        return observacion;
     }
 
-    public void setTipoAutorizacion(String tipoAutorizacion) {
-        this.tipoAutorizacion = tipoAutorizacion;
-    }
-
-    public String getAsunto() {
-        return asunto;
-    }
-
-    public void setAsunto(String asunto) {
-        this.asunto = asunto;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
     }
 
     public String getUsuario() {

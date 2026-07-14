@@ -15,10 +15,11 @@ import com.stiveen.gestionhospitalaria.dto.response.IngresoListadoResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -161,7 +162,7 @@ public class IngresoService {
         dto.setDocumentos(documentos);
 
         List<AutorizacionResponse> autorizaciones =
-                autorizacionRepository.findByIngresoId(ingreso.getId())
+                autorizacionRepository.findByIngresoOrderByFechaCreacionDesc(ingreso)
                         .stream()
                         .map(this::mapAutorizacion)
                         .toList();
@@ -174,8 +175,6 @@ public class IngresoService {
                         .stream()
                         .map(this::mapCorreo)
                         .toList();
-
-        System.out.println("CORREOS ENCONTRADOS: " + correos.size());
 
         dto.setCorreos(correos);
 
@@ -198,17 +197,27 @@ public class IngresoService {
     }
 
     private AutorizacionResponse mapAutorizacion(
-            com.stiveen.gestionhospitalaria.entity.Autorizacion autorizacion) {
+            Autorizacion autorizacion) {
+
         AutorizacionResponse dto = new AutorizacionResponse();
+
+        // Información de la autorización
         dto.setId(autorizacion.getId());
-        dto.setTipoAutorizacion(autorizacion.getTipoAutorizacion().name());
-        dto.setAsunto(autorizacion.getAsunto());
-        dto.setDescripcion(autorizacion.getDescripcion());
+        dto.setNumeroAutorizacion(autorizacion.getNumeroAutorizacion());
+        dto.setObservacion(autorizacion.getObservacion());
+
+        // Información del documento
+        dto.setNombreArchivo(autorizacion.getNombreOriginalArchivo());
+        dto.setExtension(autorizacion.getExtension());
+        dto.setTamanoArchivo(autorizacion.getTamanoArchivo());
+
+        // Información del ingreso
+        dto.setIngresoId(autorizacion.getIngreso().getId());
+        dto.setNumeroIngreso(autorizacion.getIngreso().getNumeroIngreso());
+
+        // Trazabilidad
         dto.setUsuario(autorizacion.getUsuario());
         dto.setRolUsuario(autorizacion.getRolUsuario());
-        dto.setNumeroIngreso(autorizacion.getIngreso().getNumeroIngreso());
-        dto.setEpsDestino(autorizacion.getEpsDestino().getNombre());
-        dto.setCantidadAdjuntos(autorizacion.getCantidadAdjuntos());
         dto.setFechaCreacion(autorizacion.getFechaCreacion());
 
         return dto;
@@ -241,12 +250,28 @@ public class IngresoService {
         // ADJUNTOS (FIX REAL)
         // =========================
         if (correo.getAdjuntos() != null) {
+
             dto.setAdjuntos(
+
                     correo.getAdjuntos()
                             .stream()
-                            .map(a -> new AdjuntoResponse(a.getNombreArchivo()))
+                            .map(a -> {
+
+                                AdjuntoResponse adjunto = new AdjuntoResponse();
+
+                                adjunto.setId(a.getId());
+                                adjunto.setNombreArchivo(a.getNombreArchivo());
+                                adjunto.setExtension(a.getExtension());
+                                adjunto.setTamanoArchivo(a.getTamanoArchivo());
+                                adjunto.setTamano(a.getTamano());
+
+                                return adjunto;
+
+                            })
                             .toList()
+
             );
+
         }
 
         // =========================
@@ -258,9 +283,61 @@ public class IngresoService {
                             .stream()
                             .map(e -> {
                                 EnvioResponse r = new EnvioResponse();
+
+                                r.setId(e.getId());
+
+                                r.setNumeroEnvio(e.getNumeroEnvio());
                                 r.setIntento(e.getNumeroEnvio());
-                                r.setFechaEnvio(e.getFechaEnvio());
-                                r.setEstado(e.getTipoEnvio().name());
+
+                                r.setTipoEnvio(e.getTipoEnvio().name());                                r.setEstado(e.getTipoEnvio().name());
+
+                                r.setFechaProgramada(e.getFechaProgramada());
+                                r.setFechaEjecutada(e.getFechaEjecutada());
+
+                                r.setAsunto(e.getAsunto());
+                                r.setMensaje(e.getMensaje());
+                                String destinatarios = e.getDestinatarios();
+
+                                if (destinatarios == null || destinatarios.isBlank()) {
+
+                                    r.setDestinatarios(List.of());
+
+                                } else {
+
+                                    r.setDestinatarios(
+                                            Arrays.stream(destinatarios.split(";"))
+                                                    .map(String::trim)
+                                                    .filter(s -> !s.isEmpty())
+                                                    .toList()
+                                    );
+
+                                }
+
+                                r.setAdjuntos(
+                                        e.getAdjuntos()
+                                                .stream()
+                                                .map(a -> {
+
+                                                    AdjuntoResponse ar = new AdjuntoResponse();
+
+                                                    ar.setId(a.getId());
+                                                    ar.setNombreArchivo(a.getNombreArchivo());
+                                                    ar.setExtension(a.getExtension());
+                                                    ar.setTamanoArchivo(a.getTamanoArchivo());
+                                                    ar.setTamano(a.getTamano());
+
+                                                    return ar;
+
+                                                })
+                                                .toList()
+                                );
+                                r.setUsuario(e.getUsuario());
+                                r.setRolUsuario(e.getRolUsuario());
+
+                                r.setAutomatico(e.getAutomatico());
+                                r.setActivo(e.getActivo());
+                                r.setEscalamiento(e.getEscalamiento());
+
                                 return r;
                             })
                             .toList()
@@ -416,7 +493,8 @@ public class IngresoService {
 
         // AUTORIZACIONES
 
-        autorizacionRepository.findByIngresoId(ingresoId)
+        autorizacionRepository
+                .findByIngresoOrderByFechaCreacionDesc(ingreso)
                 .forEach(auto -> {
 
                     TimelineResponse evento = new TimelineResponse();
@@ -424,10 +502,38 @@ public class IngresoService {
                     evento.setFecha(auto.getFechaCreacion());
                     evento.setTipo("AUTORIZACION");
                     evento.setUsuario(auto.getUsuario());
-                    evento.setDescripcion("Autorización " +
-                            auto.getTipoAutorizacion().name() + " - " + auto.getAsunto());
+
+                    StringBuilder descripcion = new StringBuilder();
+
+                    if (auto.getNumeroAutorizacion() != null) {
+                        descripcion.append("Número: ")
+                                .append(auto.getNumeroAutorizacion());
+                    }
+
+                    if (auto.getObservacion() != null) {
+
+                        if (descripcion.length() > 0) {
+                            descripcion.append(" | ");
+                        }
+
+                        descripcion.append("Observación: ")
+                                .append(auto.getObservacion());
+                    }
+
+                    if (auto.getNombreOriginalArchivo() != null) {
+
+                        if (descripcion.length() > 0) {
+                            descripcion.append(" | ");
+                        }
+
+                        descripcion.append("Documento: ")
+                                .append(auto.getNombreOriginalArchivo());
+                    }
+
+                    evento.setDescripcion(descripcion.toString());
 
                     timeline.add(evento);
+
                 });
 
         timeline.sort(
@@ -456,7 +562,5 @@ public class IngresoService {
                 .stream()
                 .map(this::mapListado)
                 .toList();
-
     }
-
 }
