@@ -37,8 +37,7 @@ public class IngresoRequest {
     @NotBlank(message = "El sexo es obligatorio")
     private String sexo;
 
-    private String usuario;
-    private String rolUsuario;
+
 
     // getters y setters
 
@@ -115,13 +114,6 @@ public class IngresoRequest {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
 
     public String getSexo() {
         return sexo;
@@ -131,11 +123,4 @@ public class IngresoRequest {
         this.sexo = sexo;
     }
 
-    public String getRolUsuario() {
-        return rolUsuario;
-    }
-
-    public void setRolUsuario(String rolUsuario) {
-        this.rolUsuario = rolUsuario;
-    }
 }

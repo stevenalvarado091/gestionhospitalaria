@@ -33,10 +33,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     ) throws UsernameNotFoundException {
 
         Usuario usuario = usuarioRepository
-                .findByUsuario(nombreUsuario)
+                .findByNumeroDocumento(nombreUsuario)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
-                                "No existe un usuario registrado con el nombre: "
+                                "No existe un usuario registrado con el documento: "
                                         + nombreUsuario
                         )
                 );

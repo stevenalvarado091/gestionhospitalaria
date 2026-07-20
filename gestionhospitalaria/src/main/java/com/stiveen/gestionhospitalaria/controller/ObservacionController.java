@@ -1,8 +1,11 @@
 package com.stiveen.gestionhospitalaria.controller;
 
+import com.stiveen.gestionhospitalaria.dto.request.ObservacionRequest;
 import com.stiveen.gestionhospitalaria.dto.response.ObservacionResponse;
 import com.stiveen.gestionhospitalaria.entity.Observacion;
+import com.stiveen.gestionhospitalaria.security.user.CustomUserDetails;
 import com.stiveen.gestionhospitalaria.service.ObservacionService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +23,16 @@ public class ObservacionController {
     }
 
     @PostMapping("/ingresos/{ingresoId}")
-    public ObservacionResponse guardar(@PathVariable Long ingresoId, @RequestBody Observacion observacion) {
-        return observacionService.guardarObservacion(ingresoId, observacion);
+    public ObservacionResponse guardar(
+            @PathVariable Long ingresoId,
+            @RequestBody ObservacionRequest request,
+            @AuthenticationPrincipal CustomUserDetails usuarioAutenticado) {
+
+        return observacionService.guardarObservacion(
+                ingresoId,
+                request,
+                usuarioAutenticado
+        );
     }
 
     @GetMapping("/ingresos/{ingresoId}")

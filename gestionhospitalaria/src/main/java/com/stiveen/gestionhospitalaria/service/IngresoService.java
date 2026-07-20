@@ -6,6 +6,7 @@ import com.stiveen.gestionhospitalaria.exception.EpsNoEncontradaException;
 import com.stiveen.gestionhospitalaria.exception.IngresoDuplicadoException;
 import com.stiveen.gestionhospitalaria.exception.IngresoNoEncontradoException;
 import com.stiveen.gestionhospitalaria.repository.*;
+import com.stiveen.gestionhospitalaria.security.user.CustomUserDetails;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.stiveen.gestionhospitalaria.dto.request.IngresoRequest;
@@ -53,7 +54,8 @@ public class IngresoService {
     }
 
 
-    public Ingreso crearIngreso(IngresoRequest request) {
+    public Ingreso crearIngreso(IngresoRequest request,
+                                CustomUserDetails usuarioAutenticado) {
 
         Paciente paciente = pacienteRepository
                 .findByTipoDocumentoAndNumeroDocumento(request.getTipoDocumento(), request.getNumeroDocumento()).orElse(null);
@@ -86,8 +88,10 @@ public class IngresoService {
         Ingreso ingreso = new Ingreso();
 
         ingreso.setNumeroIngreso(request.getNumeroIngreso());
-        ingreso.setUsuario(request.getUsuario());
-        ingreso.setRolUsuario(request.getRolUsuario());
+        Usuario usuario = usuarioAutenticado.getUsuario();
+
+        ingreso.setUsuario(usuario.getNombreCompleto());
+        ingreso.setRolUsuario(usuario.getRol().getNombre());
         ingreso.setPaciente(paciente);
         ingreso.setEps(eps);
         ingreso.setFechaIngreso(java.time.LocalDateTime.now());
@@ -128,7 +132,7 @@ public class IngresoService {
 
         // OBSERVACIONES
         List<ObservacionResponse> observaciones =
-                observacionRepository.findByIngresoId(ingreso.getId())
+                observacionRepository.findByIngresoIdOrderByFechaCreacionDesc(ingreso.getId())
                         .stream()
                         .map(this::mapObservacion)
                         .toList();
@@ -138,7 +142,7 @@ public class IngresoService {
         // DOCUMENTOS
         // DOCUMENTOS
         List<DocumentoResponse> documentos =
-                documentoRepository.findByIngresoId(ingreso.getId())
+                documentoRepository.findByIngresoIdOrderByFechaCreacionDesc(ingreso.getId())
                         .stream()
                         .map(d -> {
 
@@ -448,7 +452,7 @@ public class IngresoService {
 
         // OBSERVACIONES
 
-        observacionRepository.findByIngresoId(ingresoId)
+        observacionRepository.findByIngresoIdOrderByFechaCreacionDesc(ingresoId)
                 .forEach(obs -> {
 
                     TimelineResponse evento = new TimelineResponse();
@@ -463,7 +467,7 @@ public class IngresoService {
 
         // DOCUMENTOS
 
-        documentoRepository.findByIngresoId(ingresoId)
+        documentoRepository.findByIngresoIdOrderByFechaCreacionDesc(ingresoId)
                 .forEach(doc -> {
 
                     TimelineResponse evento = new TimelineResponse();
@@ -507,7 +511,7 @@ public class IngresoService {
 
                     if (auto.getNumeroAutorizacion() != null) {
                         descripcion.append("Número: ")
-                                .append(auto.getNumeroAutorizacion());
+                                    .append(auto.getNumeroAutorizacion());
                     }
 
                     if (auto.getObservacion() != null) {

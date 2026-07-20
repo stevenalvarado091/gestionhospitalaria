@@ -2,10 +2,11 @@ package com.stiveen.gestionhospitalaria.controller;
 
 import com.stiveen.gestionhospitalaria.dto.response.CorreoEnviadoResponse;
 import com.stiveen.gestionhospitalaria.dto.response.CorreoResponse;
-import com.stiveen.gestionhospitalaria.entity.Paciente;
 import com.stiveen.gestionhospitalaria.enums.TipoCorreo;
+import com.stiveen.gestionhospitalaria.security.user.CustomUserDetails;
 import com.stiveen.gestionhospitalaria.service.CorreoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,37 +28,26 @@ public class CorreoController {
             @RequestParam Long ingresoId,
             @RequestParam Long epsDestinoId,
             @RequestParam TipoCorreo tipoCorreo,
-            @RequestParam String usuario,
-            @RequestParam String rolUsuario,
-            @RequestParam(required = false)
-            MultipartFile[] archivos
+            @RequestParam(required = false) MultipartFile[] archivos,
+
+            @AuthenticationPrincipal CustomUserDetails usuarioAutenticado
+
     ) {
 
         CorreoEnviadoResponse response = correoService.enviarCorreo(
-                        ingresoId,
-                        epsDestinoId,
-                        tipoCorreo,
-                        usuario,
-                        rolUsuario,
-                        archivos);
+                ingresoId,
+                epsDestinoId,
+                tipoCorreo,
+                archivos,
+                usuarioAutenticado
+        );
 
         return ResponseEntity.ok(response);
     }
 
-    private String nombreCompleto(Paciente paciente) {
-
-        return String.join(" ",
-                paciente.getPrimerNombre(),
-                paciente.getSegundoNombre() == null ? "" : paciente.getSegundoNombre(),
-                paciente.getPrimerApellido(),
-                paciente.getSegundoApellido() == null ? "" : paciente.getSegundoApellido()
-        ).replaceAll("\\s+", " ").trim();
-    }
-
-
     @GetMapping("/ingreso/{ingresoId}")
     public ResponseEntity<List<CorreoResponse>> listarPorIngreso(
-            @PathVariable Long ingresoId){
+            @PathVariable Long ingresoId) {
 
         return ResponseEntity.ok(
                 correoService.listarPorIngreso(ingresoId)
@@ -69,6 +59,5 @@ public class CorreoController {
             @PathVariable Long id) {
 
         return correoService.descargarAdjunto(id);
-
     }
 }

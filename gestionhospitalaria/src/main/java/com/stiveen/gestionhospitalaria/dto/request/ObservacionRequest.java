@@ -4,8 +4,6 @@ public class ObservacionRequest {
 
     private Long ingresoId;
     private String descripcion;
-    private String usuario;
-    private String rolUsuario;
     private String tipoObservacion;
 
     public Long getIngresoId() {
@@ -22,22 +20,6 @@ public class ObservacionRequest {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
-    }
-
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getRolUsuario() {
-        return rolUsuario;
-    }
-
-    public void setRolUsuario(String rolUsuario) {
-        this.rolUsuario = rolUsuario;
     }
 
     public String getTipoObservacion() {

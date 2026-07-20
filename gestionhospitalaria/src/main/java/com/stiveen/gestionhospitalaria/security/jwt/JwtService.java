@@ -46,7 +46,7 @@ public class JwtService {
     public String generarToken(Usuario usuario) {
 
         return Jwts.builder()
-                .subject(usuario.getUsuario())
+                .subject(usuario.getNumeroDocumento())
                 .claim("rol", usuario.getRol().getNombre())
                 .claim("nombreCompleto", usuario.getNombreCompleto())
                 .issuedAt(new Date())
@@ -63,7 +63,7 @@ public class JwtService {
     /**
      * Obtiene el nombre del usuario almacenado en el JWT.
      */
-    public String obtenerNombreUsuario(String tokenJwt) {
+    public String obtenerIdentificadorUsuario(String tokenJwt) {
 
         return obtenerClaim(
                 tokenJwt,
@@ -125,11 +125,12 @@ public class JwtService {
             Usuario usuario
     ) {
 
-        String nombreUsuario =
-                obtenerNombreUsuario(tokenJwt);
+        String numeroDocumento =
+                obtenerIdentificadorUsuario(tokenJwt);
 
-        return nombreUsuario.equals(usuario.getUsuario())
+        return numeroDocumento.equals(usuario.getNumeroDocumento())
                 && !estaExpirado(tokenJwt);
+
     }
 
 }

@@ -3,18 +3,18 @@ package com.stiveen.gestionhospitalaria.dto.response;
 public class LoginResponse {
 
     private String token;
-    private String usuario;
+    private String numeroDocumento;
     private String nombreCompleto;
     private String rol;
 
     public LoginResponse(
             String token,
-            String usuario,
+            String numeroDocumento,
             String nombreCompleto,
             String rol
     ) {
         this.token = token;
-        this.usuario = usuario;
+        this.numeroDocumento = numeroDocumento;
         this.nombreCompleto = nombreCompleto;
         this.rol = rol;
     }
@@ -23,8 +23,8 @@ public class LoginResponse {
         return token;
     }
 
-    public String getUsuario() {
-        return usuario;
+    public String getNumeroDocumento() {
+        return numeroDocumento;
     }
 
     public String getNombreCompleto() {

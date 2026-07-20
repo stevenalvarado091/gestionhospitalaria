@@ -33,11 +33,12 @@ public class DatosIniciales {
                         return rolRepository.save(rol);
                     });
 
-            if (usuarioRepository.findByUsuario("admin").isEmpty()) {
+            if (usuarioRepository.findByNumeroDocumento("1234567890").isEmpty()) {
 
                 Usuario usuario = new Usuario();
 
-                usuario.setUsuario("admin");
+                usuario.setTipoDocumento("CC");
+                usuario.setNumeroDocumento("1234567890");
                 usuario.setNombreCompleto("ADMINISTRADOR");
                 usuario.setCorreo("admin@sistema.local");
 

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface DocumentoRepository extends JpaRepository<Documento, Long> {
 
-    List<Documento> findByIngresoId(Long ingresoId);
+    List<Documento> findByIngresoIdOrderByFechaCreacionDesc(Long ingresoId);
 }

@@ -6,9 +6,11 @@ import com.stiveen.gestionhospitalaria.dto.response.IngresoListadoResponse;
 import com.stiveen.gestionhospitalaria.dto.response.TimelineResponse;
 import com.stiveen.gestionhospitalaria.entity.Ingreso;
 import com.stiveen.gestionhospitalaria.enums.TipoDocumento;
+import com.stiveen.gestionhospitalaria.security.user.CustomUserDetails;
 import com.stiveen.gestionhospitalaria.service.IngresoService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +27,13 @@ public class IngresoController {
 
     @PostMapping
     public Ingreso crearIngreso(
-            @Valid @RequestBody IngresoRequest request) {
-        return ingresoService.crearIngreso(request);
+            @Valid @RequestBody IngresoRequest request,
+            @AuthenticationPrincipal CustomUserDetails usuarioAutenticado) {
+
+        return ingresoService.crearIngreso(
+                request,
+                usuarioAutenticado
+        );
     }
 
     @GetMapping

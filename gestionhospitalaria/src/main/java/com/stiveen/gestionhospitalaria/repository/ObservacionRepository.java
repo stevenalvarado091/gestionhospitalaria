@@ -8,6 +8,6 @@ import java.util.List;
 public interface ObservacionRepository
         extends JpaRepository<Observacion, Long> {
 
-    List<Observacion> findByIngresoId(Long ingresoId);
+    List<Observacion> findByIngresoIdOrderByFechaCreacionDesc(Long ingresoId);
 
 }

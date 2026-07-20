@@ -2,15 +2,16 @@ package com.stiveen.gestionhospitalaria.dto.request;
 
 public class LoginRequest {
 
-    private String usuario;
+    private String numeroDocumento;
     private String password;
 
-    public String getUsuario() {
-        return usuario;
+
+    public String getNumeroDocumento() {
+        return numeroDocumento;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
     }
 
     public String getPassword() {

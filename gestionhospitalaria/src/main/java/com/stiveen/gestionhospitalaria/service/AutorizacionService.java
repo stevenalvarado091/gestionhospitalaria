@@ -4,9 +4,11 @@ import com.stiveen.gestionhospitalaria.dto.request.CrearAutorizacionRequest;
 import com.stiveen.gestionhospitalaria.dto.response.AutorizacionResponse;
 import com.stiveen.gestionhospitalaria.entity.Autorizacion;
 import com.stiveen.gestionhospitalaria.entity.Ingreso;
+import com.stiveen.gestionhospitalaria.entity.Usuario;
 import com.stiveen.gestionhospitalaria.exception.RecursoNoEncontradoException;
 import com.stiveen.gestionhospitalaria.repository.AutorizacionRepository;
 import com.stiveen.gestionhospitalaria.repository.IngresoRepository;
+import com.stiveen.gestionhospitalaria.security.user.CustomUserDetails;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -42,8 +44,9 @@ public class AutorizacionService {
 
             CrearAutorizacionRequest request,
 
-            MultipartFile archivo
+            MultipartFile archivo,
 
+            CustomUserDetails usuarioAutenticado
     ) {
 
         Ingreso ingreso = ingresoRepository.findById(ingresoId)
@@ -67,13 +70,10 @@ public class AutorizacionService {
                 limpiar(request.getObservacion())
         );
 
-        autorizacion.setUsuario(
-                request.getUsuario()
-        );
+        Usuario usuario = usuarioAutenticado.getUsuario();
 
-        autorizacion.setRolUsuario(
-                request.getRolUsuario()
-        );
+        autorizacion.setUsuario(usuario.getNombreCompleto());
+        autorizacion.setRolUsuario(usuario.getRol().getNombre());
 
         guardarArchivo(
 

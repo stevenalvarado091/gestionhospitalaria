@@ -31,7 +31,7 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
 
         Usuario usuario = usuarioRepository
-                .findByUsuario(request.getUsuario())
+                .findByNumeroDocumento(request.getNumeroDocumento())
                 .orElseThrow(() ->
                         new RuntimeException("Usuario o contraseña incorrectos")
                 );
@@ -44,7 +44,7 @@ public class AuthService {
 
                 new UsernamePasswordAuthenticationToken(
 
-                        request.getUsuario(),
+                        request.getNumeroDocumento(),
 
                         request.getPassword()
 
@@ -60,7 +60,7 @@ public class AuthService {
 
         return new LoginResponse(
                 token,
-                usuario.getUsuario(),
+                usuario.getNumeroDocumento(),
                 usuario.getNombreCompleto(),
                 usuario.getRol().getNombre()
         );

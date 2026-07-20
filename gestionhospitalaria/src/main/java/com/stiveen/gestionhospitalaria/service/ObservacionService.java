@@ -6,6 +6,10 @@ import com.stiveen.gestionhospitalaria.entity.Observacion;
 import com.stiveen.gestionhospitalaria.repository.IngresoRepository;
 import com.stiveen.gestionhospitalaria.repository.ObservacionRepository;
 import org.springframework.stereotype.Service;
+import com.stiveen.gestionhospitalaria.dto.request.ObservacionRequest;
+import com.stiveen.gestionhospitalaria.entity.Usuario;
+import com.stiveen.gestionhospitalaria.security.user.CustomUserDetails;
+import com.stiveen.gestionhospitalaria.enums.TipoObservacion;
 
 import java.util.List;
 
@@ -22,12 +26,27 @@ public class ObservacionService {
     }
 
     // GUARDAR
-    public ObservacionResponse guardarObservacion(Long ingresoId, Observacion observacion) {
+    public ObservacionResponse guardarObservacion(
+            Long ingresoId,
+            ObservacionRequest request,
+            CustomUserDetails usuarioAutenticado){
 
         Ingreso ingreso = ingresoRepository.findById(ingresoId)
                 .orElseThrow(() -> new RuntimeException("Ingreso no encontrado"));
 
+        Observacion observacion = new Observacion();
+
+        Usuario usuario = usuarioAutenticado.getUsuario();
+
         observacion.setIngreso(ingreso);
+        observacion.setDescripcion(request.getDescripcion());
+
+        observacion.setTipoObservacion(
+                TipoObservacion.valueOf(request.getTipoObservacion())
+        );
+
+        observacion.setUsuario(usuario.getNombreCompleto());
+        observacion.setRolUsuario(usuario.getRol().getNombre());
 
         Observacion saved = observacionRepository.save(observacion);
 
@@ -37,7 +56,7 @@ public class ObservacionService {
     // LISTAR POR INGRESO
     public List<ObservacionResponse> listarPorIngreso(Long ingresoId) {
 
-        return observacionRepository.findByIngresoId(ingresoId)
+        return observacionRepository.findByIngresoIdOrderByFechaCreacionDesc(ingresoId)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();

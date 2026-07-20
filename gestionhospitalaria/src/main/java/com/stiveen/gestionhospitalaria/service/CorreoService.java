@@ -9,6 +9,7 @@ import com.stiveen.gestionhospitalaria.enums.TipoCorreo;
 import com.stiveen.gestionhospitalaria.enums.TipoEnvioCorreo;
 import com.stiveen.gestionhospitalaria.exception.IngresoNoEncontradoException;
 import com.stiveen.gestionhospitalaria.repository.*;
+import com.stiveen.gestionhospitalaria.security.user.CustomUserDetails;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -114,9 +115,8 @@ public class CorreoService {
             Long ingresoId,
             Long epsDestinoId,
             TipoCorreo tipoCorreo,
-            String usuario,
-            String rolUsuario,
-            MultipartFile[] archivos){
+            MultipartFile[] archivos,
+            CustomUserDetails usuarioAutenticado){
 
         Ingreso ingreso = ingresoRepository.findById(ingresoId)
                 .orElseThrow(() -> new IngresoNoEncontradoException(
@@ -141,8 +141,11 @@ public class CorreoService {
         correo.setEpsDestino(epsDestino);
         correo.setAsunto(asunto);
         correo.setMensaje(mensaje);
-        correo.setUsuario(usuario);
-        correo.setRolUsuario(rolUsuario);
+
+        Usuario usuario = usuarioAutenticado.getUsuario();
+
+        correo.setUsuario(usuario.getNombreCompleto());
+        correo.setRolUsuario(usuario.getRol().getNombre());
 
         correo = correoEnviadoRepository.save(correo);
 

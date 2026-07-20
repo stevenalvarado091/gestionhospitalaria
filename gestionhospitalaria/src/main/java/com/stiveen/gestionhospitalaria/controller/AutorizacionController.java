@@ -2,11 +2,13 @@ package com.stiveen.gestionhospitalaria.controller;
 
 import com.stiveen.gestionhospitalaria.dto.request.CrearAutorizacionRequest;
 import com.stiveen.gestionhospitalaria.dto.response.AutorizacionResponse;
+import com.stiveen.gestionhospitalaria.security.user.CustomUserDetails;
 import com.stiveen.gestionhospitalaria.service.AutorizacionService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,14 +40,11 @@ public class AutorizacionController {
             @RequestParam(required = false)
             String observacion,
 
-            @RequestParam
-            String usuario,
-
-            @RequestParam
-            String rolUsuario,
-
             @RequestParam(required = false)
-            MultipartFile archivo
+            MultipartFile archivo,
+
+            @AuthenticationPrincipal
+            CustomUserDetails usuarioAutenticado
 
     ) {
 
@@ -55,13 +54,12 @@ public class AutorizacionController {
         request.setIngresoId(ingresoId);
         request.setNumeroAutorizacion(numeroAutorizacion);
         request.setObservacion(observacion);
-        request.setUsuario(usuario);
-        request.setRolUsuario(rolUsuario);
 
         return autorizacionService.guardar(
                 ingresoId,
                 request,
-                archivo
+                archivo,
+                usuarioAutenticado
         );
 
     }

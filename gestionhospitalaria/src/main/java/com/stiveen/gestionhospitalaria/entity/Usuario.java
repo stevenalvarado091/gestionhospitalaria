@@ -8,8 +8,11 @@ import java.time.LocalDateTime;
 @Table(name = "usuario")
 public class Usuario extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
-    private String usuario;
+    @Column(nullable = false, length = 5)
+    private String tipoDocumento;
+
+    @Column(nullable = false, unique = true, length = 20)
+    private String numeroDocumento;
 
     @Column(nullable = false)
     private String nombreCompleto;
@@ -30,13 +33,20 @@ public class Usuario extends BaseEntity {
     private LocalDateTime ultimoIngreso;
 
 
-
-    public String getUsuario() {
-        return usuario;
+    public String getTipoDocumento() {
+        return tipoDocumento;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    public void setTipoDocumento(String tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
+    }
+
+    public String getNumeroDocumento() {
+        return numeroDocumento;
+    }
+
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
     }
 
     public String getNombreCompleto() {

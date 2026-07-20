@@ -44,11 +44,11 @@ public class CustomUserDetails implements UserDetails {
     }
 
     /**
-     * Retorna el nombre de usuario utilizado para iniciar sesión.
+     * Retorna el número de documento utilizado para iniciar sesión.
      */
     @Override
     public String getUsername() {
-        return usuario.getUsuario();
+        return usuario.getNumeroDocumento();
     }
 
     /**

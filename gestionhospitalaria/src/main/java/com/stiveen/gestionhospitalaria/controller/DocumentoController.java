@@ -1,8 +1,11 @@
 package com.stiveen.gestionhospitalaria.controller;
 
 import com.stiveen.gestionhospitalaria.dto.response.DocumentoResponse;
+import com.stiveen.gestionhospitalaria.entity.Documento;
 import com.stiveen.gestionhospitalaria.enums.TipoDocumentoArchivo;
+import com.stiveen.gestionhospitalaria.security.user.CustomUserDetails;
 import com.stiveen.gestionhospitalaria.service.DocumentoService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,18 +27,24 @@ public class DocumentoController {
 
     @PostMapping("/ingreso/{ingresoId}")
     public DocumentoResponse guardar(
+
             @PathVariable Long ingresoId,
+
             @RequestParam TipoDocumentoArchivo tipoDocumento,
-            @RequestParam String usuario,
-            @RequestParam String rolUsuario,
-            @RequestParam MultipartFile archivo
+
+            @RequestParam MultipartFile archivo,
+
+            @AuthenticationPrincipal CustomUserDetails usuarioAutenticado
+
     ) {
+
         return documentoService.guardar(
+
                 ingresoId,
                 tipoDocumento,
-                usuario,
-                rolUsuario,
-                archivo
+                archivo,
+                usuarioAutenticado
+
         );
     }
 
@@ -44,18 +53,29 @@ public class DocumentoController {
         return documentoService.listarPorIngreso(ingresoId);
     }
 
+
     @GetMapping("/{id}/descargar")
     public ResponseEntity<Resource> descargar(
             @PathVariable Long id
     ) {
 
-        Resource archivo = documentoService.descargar(id);
+        Documento documento =
+                documentoService.obtenerDocumento(id);
+
+        Resource archivo =
+                documentoService.descargar(id);
+
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" +
-                                archivo.getFilename() +
-                                "\"").body(archivo);
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\""
+                                + documento.getNombre()
+                                + "\""
+                )
+                .body(archivo);
 
     }
+
+
 }

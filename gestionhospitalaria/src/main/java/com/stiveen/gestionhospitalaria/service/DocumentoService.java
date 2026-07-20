@@ -3,10 +3,12 @@ package com.stiveen.gestionhospitalaria.service;
 import com.stiveen.gestionhospitalaria.dto.response.DocumentoResponse;
 import com.stiveen.gestionhospitalaria.entity.Documento;
 import com.stiveen.gestionhospitalaria.entity.Ingreso;
+import com.stiveen.gestionhospitalaria.entity.Usuario;
 import com.stiveen.gestionhospitalaria.enums.TipoDocumentoArchivo;
 import com.stiveen.gestionhospitalaria.exception.IngresoNoEncontradoException;
 import com.stiveen.gestionhospitalaria.repository.DocumentoRepository;
 import com.stiveen.gestionhospitalaria.repository.IngresoRepository;
+import com.stiveen.gestionhospitalaria.security.user.CustomUserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +38,8 @@ public class DocumentoService {
     public DocumentoResponse guardar(
             Long ingresoId,
             TipoDocumentoArchivo tipoDocumento,
-            String usuario,
-            String rolUsuario,
-            MultipartFile archivo
+            MultipartFile archivo,
+            CustomUserDetails usuarioAutenticado
     ) {
 
         try {
@@ -84,8 +85,10 @@ public class DocumentoService {
             documento.setRutaArchivo(rutaArchivo);
             documento.setTamanoArchivo(archivo.getSize());
             documento.setExtension(extension);
-            documento.setUsuario(usuario);
-            documento.setRolUsuario(rolUsuario);
+            Usuario usuario = usuarioAutenticado.getUsuario();
+
+            documento.setUsuario(usuario.getNombreCompleto());
+            documento.setRolUsuario(usuario.getRol().getNombre());
             Documento saved = documentoRepository.save(documento);
 
             return mapToResponse(saved);
@@ -98,7 +101,7 @@ public class DocumentoService {
 
     public List<DocumentoResponse> listarPorIngreso(Long ingresoId) {
 
-        return documentoRepository.findByIngresoId(ingresoId)
+        return documentoRepository.findByIngresoIdOrderByFechaCreacionDesc(ingresoId)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -179,4 +182,15 @@ public class DocumentoService {
 
         return dto;
     }
+
+    public Documento obtenerDocumento(Long id){
+
+        return documentoRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Documento no encontrado"
+                        )
+                );
+    }
+
 }
